@@ -81,7 +81,7 @@ let array = [];
 let lines = csv.responseText.split(/\r\n|\n/);
 // 1行ごとに処理
 for (let i = 0; i < lines.length; ++i) {
-  let cells = lines[i].split("|");
+  let cells = lines[i].split(",");
   if (cells.length != 1) {
     array.push(cells);
   }
