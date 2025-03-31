@@ -171,7 +171,7 @@ var menu1 = document.getElementById( 'insertedarea' );
 for (let i = array.length-5; i < array.length +1 ; ++i){
 	if (array[i][3] == ""){
 		if (array[i][1] == "新作商品！"){
-			menu1.insertAdjacentHTML('afterbegin','<dt>'+array[i][2]+'<span class="icon-bg1">+array[i][1]+</span></dt> \n <dd>'+array[i][0]+'</a></dd>');
+			menu1.insertAdjacentHTML('afterbegin','<dt>'+array[i][2]+'<span class="icon-bg1">'+array[i][1]+'</span></dt> \n <dd>'+array[i][0]+'</a></dd>');
 		}
 		else{
 			menu1.insertAdjacentHTML('afterbegin','<dt>'+array[i][2]+'<span>'+array[i][1]+'</span></dt> \n <dd>'+array[i][0]+'</a></dd>');
@@ -179,10 +179,10 @@ for (let i = array.length-5; i < array.length +1 ; ++i){
 	}
 	else{		
 		if (array[i][1] == "新作商品！"){
-			menu1.insertAdjacentHTML('afterbegin','<dt>'+array[i][2]+'<span class="icon-bg1">+array[i][1]+</span></dt> \n <dd><a href="'+array[i][3]+'">'+array[i][0]+'</a></dd>');
+			menu1.insertAdjacentHTML('afterbegin','<dt>'+array[i][2]+'<span class="icon-bg1">'+array[i][1]+'</span></dt> \n <dd><a href="'+array[i][3]+'">'+array[i][0]+'</a></dd>');
 		}
 		else{
-			menu1.insertAdjacentHTML('afterbegin','<dt>'+array[i][2]+'<span>+array[i][1]+</span></dt> \n <dd><a href="'+array[i][3]+'">'+array[i][0]+'</a></dd>');
+			menu1.insertAdjacentHTML('afterbegin','<dt>'+array[i][2]+'<span>'+array[i][1]+'</span></dt> \n <dd><a href="'+array[i][3]+'">'+array[i][0]+'</a></dd>');
 		}
 	}
 }
