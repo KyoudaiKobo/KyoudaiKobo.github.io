@@ -125,9 +125,9 @@
 
 <h2><span class="uline">お知らせ</span><span class="small">News</span></h2>
 
-<dl class="new">
+<dl id = "insertedarea" class="new">
 
-<dt>2025/01/15<span>イベント参加</span></dt>
+<!--<dt>2025/01/15<span>イベント参加</span></dt>
 <dd><a href="about.html#Handmademarket">百万遍さんの手づくり市</a>に出店しました！</dd>
 
 <dt>2024/12/15<span>イベント参加</span></dt>
@@ -141,6 +141,52 @@
 
 <dt>2024/10/29<span class="icon-bg1">新作商品！</span></dt>
 <dd>七面鳥しおりを販売します！</a></dd>
+-->
+
+<script>
+
+// CSVファイルを取得
+let csv = new XMLHttpRequest();
+// CSVファイルへのパス
+csv.open("GET", "newsData.csv", false);
+// csvファイル読み込み失敗時のエラー対応
+try {
+  csv.send(null);
+} catch (err) {
+  console.log(err);
+}
+// 配列を定義する
+let array = [];
+// 改行ごとに配列化
+let lines = csv.responseText.split(/\r\n|\n/);
+// 1行ごとに処理
+for (let i = 0; i < lines.length; ++i) {
+  let cells = lines[i].split("|");
+  if (cells.length != 1) {
+    array.push(cells);
+  }
+}	
+var menu1 = document.getElementById( 'insertedarea' );
+	
+for (let i = array.length-5; i < array.length +1 ; ++i){
+	if (array[i][3] == ""){
+		if (array[i][1] == "新作商品！"){
+			menu1.insertAdjacentHTML('afterbegin','<dt>'+array[i][2]+'<span class="icon-bg1">+array[i][1]+</span></dt> \n <dd>'+array[i][0]+'</a></dd>');
+		}
+		else{
+			menu1.insertAdjacentHTML('afterbegin','<dt>'+array[i][2]+'<span>'+array[i][1]+'</span></dt> \n <dd>'+array[i][0]+'</a></dd>');
+		}
+	}
+	else{		
+		if (array[i][1] == "新作商品！"){
+			menu1.insertAdjacentHTML('afterbegin','<dt>'+array[i][2]+'<span class="icon-bg1">+array[i][1]+</span></dt> \n <dd><a href="'+array[i][3]+'">'+array[i][0]+'</a></dd>');
+		}
+		else{
+			menu1.insertAdjacentHTML('afterbegin','<dt>'+array[i][2]+'<span>+array[i][1]+</span></dt> \n <dd><a href="'+array[i][3]+'">'+array[i][0]+'</a></dd>');
+		}
+	}
+}
+
 
 </dl>
 
