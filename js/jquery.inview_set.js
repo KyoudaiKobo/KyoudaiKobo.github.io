@@ -30,6 +30,13 @@ $('.blur').on('inview', function() {
 	$(this).addClass('blurstyle');
 });
 
+$(function () {
+  $(window).on("scroll touchmove", function () {
+    $(".floatingBnr").stop();
+    $(".floatingBnr").css("display", "none").delay(300).fadeIn("normal");
+  });
+});
+
 //fadeスタイルが画面内にきたら、スタイルfade-inを適用する
 /*$('.fade').on('inview', function() {
 	$(this).addClass('fade-in');
