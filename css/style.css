@@ -844,7 +844,7 @@ dl.text-menu dd {
 	position: fixed;	/*スクロールしてもボタンが移動しないようにする指定。移動させたいならfixedをabsoluteにして下さい。*/
 	z-index: 2;
 	right: 0px;			/*ボタンの右からの配置場所指定*/
-	top: 170px;			/*ボタンの上からの配置場所指定*/
+	bottom: 150px;			/*ボタンの上からの配置場所指定*/
 	padding: 20px 15px;	/*ボタン内の余白。上下、左右。*/
 	border-radius: 10px 0px 0px 10px;	/*角を丸くする指定。左上、右上、右下、左下の順番。*/
 	letter-spacing: 0.1rem;	/*文字間隔を少しだけ広く*/
