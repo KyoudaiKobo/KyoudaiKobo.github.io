@@ -217,7 +217,7 @@ document.addEventListener("click", function(e) {
 
   // 通常画像だけ拡大
   lightbox.style.display = "flex";
-  lightboxImg.src = img.src.replace("=w400-h400-c", "");
+  lightboxImg.src = img.src.replace(/=w\d+-h\d+-c/, "=w1200-h1200-c");
 });
 
 // 閉じる
