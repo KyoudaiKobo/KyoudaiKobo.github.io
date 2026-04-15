@@ -189,47 +189,7 @@ details {
 <!--/.list-menu-->
 
 <script>
-// =========================
-// タブUI生成（見出しデザイン統一）
-// =========================
-const container = document.getElementById('insertedarea');
-
-container.innerHTML = `
-  <div class="tabs">
-    <button id="tabRecent" class="tab active">
-      <span class="uline">最近の商品</span>
-      <span class="small">Recent Goods</span>
-    </button>
-    <button id="tabArchive" class="tab">
-      <span class="uline">過去商品</span>
-      <span class="small">Archive</span>
-    </button>
-  </div>
-
-  <div id="recentArea"></div>
-  <div id="archiveArea" style="display:none;"></div>
-`;
-
-// =========================
-// タブ切り替え
-// =========================
-document.getElementById('tabRecent').onclick = () => {
-  recentArea.style.display = 'block';
-  archiveArea.style.display = 'none';
-  tabRecent.classList.add('active');
-  tabArchive.classList.remove('active');
-};
-
-document.getElementById('tabArchive').onclick = () => {
-  recentArea.style.display = 'none';
-  archiveArea.style.display = 'block';
-  tabArchive.classList.add('active');
-  tabRecent.classList.remove('active');
-};
-
-// =========================
-// CSV読み込み
-// =========================
+// CSVファイルを取得
 let csv = new XMLHttpRequest();
 csv.open("GET", "goodsData.csv", false);
 
@@ -239,9 +199,13 @@ try {
   console.log(err);
 }
 
+// 配列を定義
 let array = [];
+
+// 改行ごとに分割
 let lines = csv.responseText.split(/\r\n|\n/);
 
+// 1行ごとに処理
 for (let i = 0; i < lines.length; i++) {
   let cells = lines[i].split("|");
   if (cells.length > 1) {
@@ -249,65 +213,39 @@ for (let i = 0; i < lines.length; i++) {
   }
 }
 
-// =========================
-// 並び替え（おすすめ → EC → その他）
-// =========================
+// ===== 並び替え（ここ重要） =====
 const header = array[0];
 const body = array.slice(1);
 
 body.sort((a, b) => {
   const getPriority = (row) => {
-    const flag = (row[7] || "").trim();
+    const flag = row[7];
     if (flag === "はい(おすすめ)") return 0;
     if (flag === "はい(EC)") return 1;
     return 2;
   };
+
   return getPriority(a) - getPriority(b);
 });
 
 array = [header, ...body];
 
-// =========================
-// 表示エリア取得
-// =========================
-const recentArea = document.getElementById('recentArea');
-const archiveArea = document.getElementById('archiveArea');
+// ===== 表示 =====
+const menu1 = document.getElementById('insertedarea');
 
-// =========================
-// 過去商品タイトル追加
-// =========================
-archiveArea.innerHTML = `
-  <h2>
-    <span class="uline">過去商品</span>
-    <span class="small">Archive</span>
-  </h2>
-`;
-
-// =========================
-// 過去商品格納
-// =========================
-const archiveMap = {};
-
-// =========================
-// 商品ループ
-// =========================
 for (let i = 1; i < array.length; i++) {
   const row = array[i];
   if (!row) continue;
 
+  // 安全に値取得
   const imageId = (!row[4] || row[4].length < 20)
     ? "1h_lfV7E2J_2KteQF6OjIbhbjll01yDKK"
     : row[4];
 
-  const name = row[8] || row[1];
+  const name = row[8] ? row[8] : row[1];
   const price = row[3] || "";
   const description = row[5] || "";
-  const flag = (row[7] || "").trim();
-
-  // 年度（販売開始日から抽出）
-  const year = row[6]
-    ? (row[6].match(/\d{4}/)?.[0] || "不明")
-    : "不明";
+  const flag = row[7] || "";
 
   // バッジ
   let badge = "";
@@ -317,6 +255,7 @@ for (let i = 1; i < array.length; i++) {
     badge = '<span class="newicon">EC販売中</span>';
   }
 
+  // HTML生成
   const html = `
     <div class="list up">
       <figure>
@@ -330,38 +269,9 @@ for (let i = 1; i < array.length; i++) {
     </div>
   `;
 
-  // =========================
-  // 分岐
-  // =========================
-  if (flag === "はい(過去商品)") {
-    if (!archiveMap[year]) {
-      archiveMap[year] = [];
-    }
-    archiveMap[year].push(html);
-  } else {
-    recentArea.insertAdjacentHTML('beforeend', html);
-  }
+  menu1.insertAdjacentHTML('beforeend', html);
 }
-
-// =========================
-// 過去商品描画（年度順・見出し統一）
-// =========================
-Object.keys(archiveMap)
-  .sort((a, b) => b - a)
-  .forEach(year => {
-    const section = `
-      <details>
-        <summary>
-          <span class="uline">${year}年度の商品</span>
-          <span class="small">${year}</span>
-        </summary>
-        ${archiveMap[year].join("")}
-      </details>
-    `;
-    archiveArea.insertAdjacentHTML('beforeend', section);
-  });
 </script>
-
 </section>
 	
 
