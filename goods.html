@@ -117,6 +117,7 @@ array = [header, ...body];
 const recentArea = document.getElementById('recentArea');
 const archiveArea = document.getElementById('archiveArea');
 
+
 // =========================
 // 年度ごと格納
 // =========================
@@ -130,7 +131,7 @@ for (let i = 1; i < array.length; i++) {
   if (!row) continue;
 
   const imageId = (!row[4] || row[4].length < 20)
-    ? "1h_lfV7E2J_2KteQF6OjIbhbjll01yDKK"
+    ? DUMMY_ID
     : row[4];
 
   const name = row[8] || row[1];
@@ -154,7 +155,7 @@ for (let i = 1; i < array.length; i++) {
   const html = `
     <div class="list up">
       <figure>
-        <img src="https://lh3.googleusercontent.com/d/${imageId}=w400-h400-c" width="500" height="500" alt="画像">
+        <img src="https://lh3.googleusercontent.com/d/${imageId}=w200-h200-c" width="500" height="500" alt="画像">
       </figure>
       <div class="text">
         <h4>${name}<span class="price">￥${price}</span></h4>
@@ -202,14 +203,19 @@ Object.keys(archiveMap)
 // =========================
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightbox-img");
+const DUMMY_ID = "1h_lfV7E2J_2KteQF6OjIbhbjll01yDKK";
 
 // 商品画像クリック
 document.addEventListener("click", function(e) {
   const img = e.target;
-
+  // 画像じゃないなら無視
   if (!(img instanceof HTMLImageElement)) return;
+  // 商品画像じゃないなら無視
   if (!img.closest(".list")) return;
+  // 🔥準備中画像は無効
+  if (img.src.includes(DUMMY_ID)) return;
 
+  // 通常画像だけ拡大
   lightbox.style.display = "flex";
   lightboxImg.src = img.src.replace("=w400-h400-c", "");
 });
@@ -263,10 +269,21 @@ document.addEventListener("keydown", e => {
 .list img {
   cursor: pointer;
 }
+.list img[src*="1h_lfV7E2J_2KteQF6OjIbhbjll01yDKK"] {
+  cursor: default;
+}
 	
 /* トランジション */
 #lightbox {
   transition: 0.2s;
+}
+/* 通常商品 */
+.list img:hover {
+  opacity: 0.8;
+  transform: scale(1.03);
+}
+.list img[src*="1h_lfV7E2J_2KteQF6OjIbhbjll01yDKK"]:hover {
+  opacity: 1;
 }
 
 </style>
