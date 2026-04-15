@@ -59,13 +59,12 @@
 <section id="menu1">
 <h2><span class="uline">最近の商品</span><span class="small">Recent Goods</span></h2>
 
-
-<div id="recentArea" class="list-menu">	
-</div>
-<!--/.list-menu-->
+<div id="recentArea" class="list-menu"></div>
 
 <script>
-// CSVファイルを取得
+// =========================
+// CSV読み込み
+// =========================
 let csv = new XMLHttpRequest();
 csv.open("GET", "goodsData.csv", false);
 
@@ -75,13 +74,9 @@ try {
   console.log(err);
 }
 
-// 配列を定義
 let array = [];
-
-// 改行ごとに分割
 let lines = csv.responseText.split(/\r\n|\n/);
 
-// 1行ごとに処理
 for (let i = 0; i < lines.length; i++) {
   let cells = lines[i].split("|");
   if (cells.length > 1) {
@@ -89,43 +84,45 @@ for (let i = 0; i < lines.length; i++) {
   }
 }
 
-// ===== 並び替え（ここ重要） =====
+// =========================
+// 並び替え
+// =========================
 const header = array[0];
 const body = array.slice(1);
+
+// グローバルに保存
 window.achieveList = [];
 
 body.sort((a, b) => {
   const getPriority = (row) => {
-    const flag = row[7];
+    const flag = (row[7] || "").trim();
     if (flag === "はい(おすすめ)") return 0;
     if (flag === "はい(EC)") return 1;
     return 2;
   };
-
   return getPriority(a) - getPriority(b);
 });
 
 array = [header, ...body];
 
-// ===== 表示 =====
+// =========================
+// 表示
+// =========================
 const recentArea = document.getElementById('recentArea');
-const archiveArea = document.getElementById('archiveArea');
 
 for (let i = 1; i < array.length; i++) {
   const row = array[i];
   if (!row) continue;
 
-  // 安全に値取得
   const imageId = (!row[4] || row[4].length < 20)
     ? "1h_lfV7E2J_2KteQF6OjIbhbjll01yDKK"
     : row[4];
 
-  const name = row[8] ? row[8] : row[1];
+  const name = row[8] || row[1];
   const price = row[3] || "";
   const description = row[5] || "";
-  const flag = row[7] || "";
+  const flag = (row[7] || "").trim();
 
-  // バッジ
   let badge = "";
   if (flag === "はい(おすすめ)") {
     badge = '<span class="newicon">おすすめ</span>';
@@ -145,31 +142,37 @@ for (let i = 1; i < array.length; i++) {
       ${badge}
     </div>
   `;
-//過去商品は後で表示するのでいったん変数に保管	
-  if (flag == "はい(過去商品)"){ 
-	  achieveList.push(html);
-  } else{
-	  recentArea.insertAdjacentHTML('beforeend', html);
+
+  // 分岐
+  if (flag === "はい(過去商品)") {
+    achieveList.push(html);
+  } else {
+    recentArea.insertAdjacentHTML('beforeend', html);
   }
-	  
 }
 </script>
 </section>
-	
+
+<!-- ========================= -->
+<!-- 過去商品 -->
+<!-- ========================= -->
 <section id="menu2">
 <h2><span class="uline">過去の商品</span><span class="small">Archive</span></h2>
+
+<div id="archiveArea" class="list-menu"></div>
 
 <script>
 const archiveArea = document.getElementById('archiveArea');
 
-for (let i = 0; i < achieveList.length; i++) {
-  archiveArea.insertAdjacentHTML('beforeend', achieveList[i]);
+// 念のため存在チェック
+if (window.achieveList) {
+  for (let i = 0; i < achieveList.length; i++) {
+    archiveArea.insertAdjacentHTML('beforeend', achieveList[i]);
+  }
 }
-	
 </script>
 
 </section>
-
 </main>
 
 </div>
