@@ -63,8 +63,11 @@
 <div id="insertedarea" class="list-menu">	
 </div>
 <!--/.list-menu-->
+これをそのまま <script> に入れれば動きます。
+
+🎯 完全版 <script> 中身
 <script>
-// CSVファイルを取得
+// ===== CSV読み込み =====
 let csv = new XMLHttpRequest();
 csv.open("GET", "goodsData.csv", false);
 
@@ -74,13 +77,9 @@ try {
   console.log(err);
 }
 
-// 配列を定義
 let array = [];
-
-// 改行ごとに分割
 let lines = csv.responseText.split(/\r\n|\n/);
 
-// 1行ごとに処理
 for (let i = 0; i < lines.length; i++) {
   let cells = lines[i].split("|");
   if (cells.length > 1) {
@@ -88,7 +87,7 @@ for (let i = 0; i < lines.length; i++) {
   }
 }
 
-// ===== 並び替え（ここ重要） =====
+// ===== 並び替え（おすすめ → EC → その他）=====
 const header = array[0];
 const body = array.slice(1);
 
@@ -99,30 +98,39 @@ body.sort((a, b) => {
     if (flag === "はい(EC)") return 1;
     return 2;
   };
-
   return getPriority(a) - getPriority(b);
 });
 
 array = [header, ...body];
 
-// ===== 表示 =====
-const menu1 = document.getElementById('insertedarea');
+// ===== 表示エリア =====
+const recentArea = document.getElementById('recentArea');
+const archiveArea = document.getElementById('archiveArea');
 
+// ===== 過去商品格納 =====
+const archiveMap = {};
+
+// ===== 商品ループ =====
 for (let i = 1; i < array.length; i++) {
   const row = array[i];
   if (!row) continue;
 
-  // 安全に値取得
+  // ===== 安全取得 =====
   const imageId = (!row[4] || row[4].length < 20)
     ? "1h_lfV7E2J_2KteQF6OjIbhbjll01yDKK"
     : row[4];
 
-  const name = row[8] ? row[8] : row[1];
+  const name = row[8] || row[1];
   const price = row[3] || "";
   const description = row[5] || "";
   const flag = row[7] || "";
 
-  // バッジ
+  // ===== 販売開始日 → 年度（安全に抽出）=====
+  const year = row[6]
+    ? (row[6].match(/\d{4}/)?.[0] || "不明")
+    : "不明";
+
+  // ===== バッジ =====
   let badge = "";
   if (flag === "はい(おすすめ)") {
     badge = '<span class="newicon">おすすめ</span>';
@@ -130,7 +138,7 @@ for (let i = 1; i < array.length; i++) {
     badge = '<span class="newicon">EC販売中</span>';
   }
 
-  // HTML生成
+  // ===== HTML =====
   const html = `
     <div class="list up">
       <figure>
@@ -144,8 +152,32 @@ for (let i = 1; i < array.length; i++) {
     </div>
   `;
 
-  menu1.insertAdjacentHTML('beforeend', html);
+  // ===== 分岐（ここが今回の本質）=====
+  if (flag === "はい(過去商品)") {
+    // 過去商品 → 年度ごとにまとめる
+    if (!archiveMap[year]) {
+      archiveMap[year] = [];
+    }
+    archiveMap[year].push(html);
+
+  } else {
+    // 最近商品
+    recentArea.insertAdjacentHTML('beforeend', html);
+  }
 }
+
+// ===== 過去商品を描画（新しい年度順）=====
+Object.keys(archiveMap)
+  .sort((a, b) => b - a)
+  .forEach(year => {
+    const section = `
+      <details>
+        <summary>${year}年度の商品</summary>
+        ${archiveMap[year].join("")}
+      </details>
+    `;
+    archiveArea.insertAdjacentHTML('beforeend', section);
+  });
 </script>
 
 </section>
