@@ -201,8 +201,10 @@ const lightboxImg = document.getElementById("lightbox-img");
 
 // 商品画像クリック
 document.addEventListener("click", function(e) {
-  const img = e.target.closest(".list img");
-  if (!img) return;
+  const img = e.target;
+
+  if (!(img instanceof HTMLImageElement)) return;
+  if (!img.closest(".list")) return;
 
   lightbox.style.display = "flex";
   lightboxImg.src = img.src.replace("=w400-h400-c", "");
