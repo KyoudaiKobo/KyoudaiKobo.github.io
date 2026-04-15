@@ -212,7 +212,7 @@ document.addEventListener("click", function(e) {
   if (!(img instanceof HTMLImageElement)) return;
   // 商品画像じゃないなら無視
   if (!img.closest(".list")) return;
-  // 🔥準備中画像は無効
+  // 準備中画像は無効
   if (img.src.includes(DUMMY_ID)) return;
 
   // 通常画像だけ拡大
@@ -264,27 +264,29 @@ document.addEventListener("keydown", e => {
   max-height: 90%;
   border-radius: 8px;
 }
-
-/* クリック可能にする */
-.list img {
-  cursor: pointer;
-}
-.list img[src*="1h_lfV7E2J_2KteQF6OjIbhbjll01yDKK"] {
-  cursor: default;
-}
 	
 /* トランジション */
 #lightbox {
   transition: 0.2s;
+}
+/* クリック可能にする */
+.list img {
+  cursor: pointer;
 }
 /* 通常商品 */
 .list img:hover {
   opacity: 0.8;
   transform: scale(1.03);
 }
+.list img[src*="1h_lfV7E2J_2KteQF6OjIbhbjll01yDKK"] {
+  cursor: default;
+}
+/* ホバー効果を打ち消す */
 .list img[src*="1h_lfV7E2J_2KteQF6OjIbhbjll01yDKK"]:hover {
   opacity: 1;
+  transform: none;
 }
+
 
 </style>
 	
