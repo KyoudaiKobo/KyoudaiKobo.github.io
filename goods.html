@@ -60,7 +60,7 @@
 <h2><span class="uline">最近の商品</span><span class="small">Recent Goods</span></h2>
 
 
-<div id="insertedarea" class="list-menu">	
+<div id="recentArea" class="list-menu">	
 </div>
 <!--/.list-menu-->
 
@@ -92,7 +92,7 @@ for (let i = 0; i < lines.length; i++) {
 // ===== 並び替え（ここ重要） =====
 const header = array[0];
 const body = array.slice(1);
-const achieveList = [];
+window.achieveList = [];
 
 body.sort((a, b) => {
   const getPriority = (row) => {
@@ -108,7 +108,8 @@ body.sort((a, b) => {
 array = [header, ...body];
 
 // ===== 表示 =====
-const menu1 = document.getElementById('insertedarea');
+const recentArea = document.getElementById('recentArea');
+const archiveArea = document.getElementById('archiveArea');
 
 for (let i = 1; i < array.length; i++) {
   const row = array[i];
@@ -146,34 +147,26 @@ for (let i = 1; i < array.length; i++) {
   `;
 //過去商品は後で表示するのでいったん変数に保管	
   if (flag == "はい(過去商品)"){ 
-	  achieveList.append(html);
+	  achieveList.push(html);
   } else{
-	  menu1.insertAdjacentHTML('beforeend', html);
+	  recentArea.insertAdjacentHTML('beforeend', html);
   }
 	  
 }
 </script>
 </section>
 	
-<section id="menu1">
-<h2><span class="uline">過去の商品</span><span class="small">Recent Goods</span></h2>
+<section id="menu2">
+<h2><span class="uline">過去の商品</span><span class="small">Archive</span></h2>
 
 <script>
+const archiveArea = document.getElementById('archiveArea');
+
 for (let i = 0; i < achieveList.length; i++) {
-	menu1.insertAdjacentHTML('beforeend', achieveList[i]);
+  archiveArea.insertAdjacentHTML('beforeend', achieveList[i]);
 }
 	
 </script>
-
-
-<div id="insertedarea" class="list-menu">	
-
-	
-
-	
-
-
-
 
 </section>
 
