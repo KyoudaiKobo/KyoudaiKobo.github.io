@@ -58,8 +58,13 @@
 
 <section id="menu1">
 <h2><span class="uline">最近の商品</span><span class="small">Recent Goods</span></h2>
-
 <div id="recentArea" class="list-menu"></div>
+</section>
+
+<section id="menu2">
+<h2><span class="uline">過去の商品</span><span class="small">Archive</span></h2>
+<div id="archiveArea" class="list-menu"></div>
+</section>
 
 <script>
 // =========================
@@ -85,13 +90,10 @@ for (let i = 0; i < lines.length; i++) {
 }
 
 // =========================
-// 並び替え
+// 並び替え（おすすめ → EC → その他）
 // =========================
 const header = array[0];
 const body = array.slice(1);
-
-// グローバルに保存
-window.achieveList = [];
 
 body.sort((a, b) => {
   const getPriority = (row) => {
@@ -106,10 +108,14 @@ body.sort((a, b) => {
 array = [header, ...body];
 
 // =========================
-// 表示
+// 表示エリア取得
 // =========================
 const recentArea = document.getElementById('recentArea');
+const archiveArea = document.getElementById('archiveArea');
 
+// =========================
+// 商品ループ（ここで全部分岐）
+// =========================
 for (let i = 1; i < array.length; i++) {
   const row = array[i];
   if (!row) continue;
@@ -123,6 +129,7 @@ for (let i = 1; i < array.length; i++) {
   const description = row[5] || "";
   const flag = (row[7] || "").trim();
 
+  // バッジ
   let badge = "";
   if (flag === "はい(おすすめ)") {
     badge = '<span class="newicon">おすすめ</span>';
@@ -143,36 +150,16 @@ for (let i = 1; i < array.length; i++) {
     </div>
   `;
 
-  // 分岐
+  // =========================
+  // 分岐（ここだけでOK）
+  // =========================
   if (flag === "はい(過去商品)") {
-    achieveList.push(html);
+    archiveArea.insertAdjacentHTML('beforeend', html);
   } else {
     recentArea.insertAdjacentHTML('beforeend', html);
   }
 }
 </script>
-</section>
-
-<!-- ========================= -->
-<!-- 過去商品 -->
-<!-- ========================= -->
-<section id="menu2">
-<h2><span class="uline">過去の商品</span><span class="small">Archive</span></h2>
-
-<div id="archiveArea" class="list-menu"></div>
-
-<script>
-const archiveArea = document.getElementById('archiveArea');
-
-// 念のため存在チェック
-if (window.achieveList) {
-  for (let i = 0; i < achieveList.length; i++) {
-    archiveArea.insertAdjacentHTML('beforeend', achieveList[i]);
-  }
-}
-</script>
-
-</section>
 </main>
 
 </div>
