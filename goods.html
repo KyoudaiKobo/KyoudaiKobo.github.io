@@ -92,6 +92,7 @@ for (let i = 0; i < lines.length; i++) {
 // ===== 並び替え（ここ重要） =====
 const header = array[0];
 const body = array.slice(1);
+const achieveList = [];
 
 body.sort((a, b) => {
   const getPriority = (row) => {
@@ -143,14 +144,26 @@ for (let i = 1; i < array.length; i++) {
       ${badge}
     </div>
   `;
-
-  menu1.insertAdjacentHTML('beforeend', html);
+//過去商品は後で表示するのでいったん変数に保管	
+  if (flag == "はい(過去商品)"){ 
+	  achieveList.append(html);
+  } else{
+	  menu1.insertAdjacentHTML('beforeend', html);
+  }
+	  
 }
 </script>
 </section>
 	
 <section id="menu1">
 <h2><span class="uline">過去の商品</span><span class="small">Recent Goods</span></h2>
+
+<script>
+for (let i = 1; i < achieveList.length; i++) {
+	menu1.insertAdjacentHTML('beforeend', achieveList[i]);
+}
+	
+</script>
 
 
 <div id="insertedarea" class="list-menu">	
