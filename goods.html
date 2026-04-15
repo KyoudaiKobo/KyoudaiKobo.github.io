@@ -88,24 +88,43 @@ for (let i = 0; i < lines.length; ++i) {
 }	
 var menu1 = document.getElementById( 'insertedarea' );
 	
-for (let i = 1; i < array.length +1 ; ++i){
-	//[4](写真格納変数)の長さが短かったら何もないと見なして写真無い用のサムネを表示 (もっといいやり方ありそう)
-	if (array[i][4].length <= 10){
-		array [i][4] = "1h_lfV7E2J_2KteQF6OjIbhbjll01yDKK";
-	}
-	//表示用の商品名があったらそれを商品名に代入
-	if (array[i][8] != ""){
-		array[i][1] = array[i][8] 
-	}
-	
-	//商品を表示
-	if (array[i][7] == "はい(おすすめ)"){
-		menu1.insertAdjacentHTML('beforeend','<div class="list up"> \n <figure><img src="https://lh3.googleusercontent.com/d/'+array[i][4]+'" width="500" height="500" allow="autoplay" alt="画像"></figure> \n <div class="text"> \n <h4>'+array[i][1]+'<span class="price">￥'+array[i][3]+'</span></h4> \n <p>'+array[i][5]+'</p> \n </div> \n <span class="newicon">おすすめ</span> \n </div>');
-	}else if (array[i][7] == "はい(EC)"){
-		menu1.insertAdjacentHTML('beforeend','<div class="list up"> \n <figure><img src="https://lh3.googleusercontent.com/d/'+array[i][4]+'" width="500" height="500" allow="autoplay" alt="画像"></figure> \n <div class="text"> \n <h4>'+array[i][1]+'<span class="price">￥'+array[i][3]+'</span></h4> \n <p>'+array[i][5]+'</p> \n </div> \n <span class="newicon">EC販売中</span> \n </div>');
-	}else if (array[i][7] == "いいえ"){
-		menu1.insertAdjacentHTML('beforeend','<div class="list up"> \n <figure><img src="https://lh3.googleusercontent.com/d/'+array[i][4]+'" width="500" height="500" allow="autoplay" alt="画像" ></figure> \n <div class="text"> \n <h4>'+array[i][1]+'<span class="price">￥'+array[i][3]+'</span></h4> \n <p>'+array[i][5]+'</p> \n </div> \n </div>');
-	}
+for (let i = 1; i < array.length; i++) {
+  const row = array[i];
+  if (!row) continue;
+
+  // 各値を安全に取得
+  const imageId = (!row[4] || row[4].length < 20)
+    ? "1h_lfV7E2J_2KteQF6OjIbhbjll01yDKK"
+    : row[4];
+
+  const name = row[8] ? row[8] : row[1];
+  const price = row[3] || "";
+  const description = row[5] || "";
+  const flag = row[7] || "";
+
+  // バッジ判定
+  let badge = "";
+  if (flag === "はい(おすすめ)") {
+    badge = '<span class="newicon">おすすめ</span>';
+  } else if (flag === "はい(EC)") {
+    badge = '<span class="newicon">EC販売中</span>';
+  }
+
+  // HTML生成
+  const html = `
+    <div class="list up">
+      <figure>
+        <img src="https://lh3.googleusercontent.com/d/${imageId}" width="500" height="500" alt="画像">
+      </figure>
+      <div class="text">
+        <h4>${name}<span class="price">￥${price}</span></h4>
+        <p>${description}</p>
+      </div>
+      ${badge}
+    </div>
+  `;
+
+  menu1.insertAdjacentHTML('beforeend', html);
 }
 
 
