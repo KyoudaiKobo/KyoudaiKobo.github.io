@@ -64,35 +64,55 @@
 </div>
 <!--/.list-menu-->
 <script>
-
 // CSVファイルを取得
 let csv = new XMLHttpRequest();
-// CSVファイルへのパス
 csv.open("GET", "goodsData.csv", false);
-// csvファイル読み込み失敗時のエラー対応
+
 try {
   csv.send(null);
 } catch (err) {
   console.log(err);
 }
-// 配列を定義する
+
+// 配列を定義
 let array = [];
-// 改行ごとに配列化
+
+// 改行ごとに分割
 let lines = csv.responseText.split(/\r\n|\n/);
+
 // 1行ごとに処理
-for (let i = 0; i < lines.length; ++i) {
+for (let i = 0; i < lines.length; i++) {
   let cells = lines[i].split("|");
-  if (cells.length != 1) {
+  if (cells.length > 1) {
     array.push(cells);
   }
-}	
-var menu1 = document.getElementById( 'insertedarea' );
-	
+}
+
+// ===== 並び替え（ここ重要） =====
+const header = array[0];
+const body = array.slice(1);
+
+body.sort((a, b) => {
+  const getPriority = (row) => {
+    const flag = row[7];
+    if (flag === "はい(おすすめ)") return 0;
+    if (flag === "はい(EC)") return 1;
+    return 2;
+  };
+
+  return getPriority(a) - getPriority(b);
+});
+
+array = [header, ...body];
+
+// ===== 表示 =====
+const menu1 = document.getElementById('insertedarea');
+
 for (let i = 1; i < array.length; i++) {
   const row = array[i];
   if (!row) continue;
 
-  // 各値を安全に取得
+  // 安全に値取得
   const imageId = (!row[4] || row[4].length < 20)
     ? "1h_lfV7E2J_2KteQF6OjIbhbjll01yDKK"
     : row[4];
@@ -102,7 +122,7 @@ for (let i = 1; i < array.length; i++) {
   const description = row[5] || "";
   const flag = row[7] || "";
 
-  // バッジ判定
+  // バッジ
   let badge = "";
   if (flag === "はい(おすすめ)") {
     badge = '<span class="newicon">おすすめ</span>';
@@ -126,9 +146,6 @@ for (let i = 1; i < array.length; i++) {
 
   menu1.insertAdjacentHTML('beforeend', html);
 }
-
-
-
 </script>
 
 </section>
