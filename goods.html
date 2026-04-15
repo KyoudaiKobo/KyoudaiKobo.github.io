@@ -192,6 +192,31 @@ Object.keys(archiveMap)
     `;
     archiveArea.insertAdjacentHTML('beforeend', section);
   });
+
+// =========================
+// ライトボックス
+// =========================
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightbox-img");
+
+// 商品画像クリック
+document.addEventListener("click", function(e) {
+  if (e.target.tagName === "IMG" && e.target.closest(".list")) {
+    lightbox.style.display = "flex";
+    lightboxImg.src = e.target.src.replace("=w400-h400-c", ""); // 高画質表示
+  }
+});
+
+// 閉じる
+lightbox.onclick = () => {
+  lightbox.style.display = "none";
+};
+// ESCでも閉じる
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    lightbox.style.display = "none";
+  }
+});
 </script>
 
 <style>
@@ -204,6 +229,39 @@ Object.keys(archiveMap)
   aspect-ratio: 1 / 1;   /* 正方形に固定 */
   object-fit: cover;     /* はみ出た部分をカット */
 }
+	
+/* ライトボックスの描写 */
+/* 背景 */
+#lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* 画像 */
+#lightbox img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 8px;
+}
+
+/* クリック可能にする */
+.list img {
+  cursor: pointer;
+}
+	
+/* トランジション */
+#lightbox {
+  transition: 0.2s;
+}
+
 </style>
 	
 </main>
@@ -268,6 +326,12 @@ Object.keys(archiveMap)
 
 <!--このテンプレート専用のスクリプト-->
 <script src="js/main.js"></script>
+
+<!--ライトボックスの仕組み-->
+<div id="lightbox">
+  <img id="lightbox-img">
+</div>
+
 
 </body>
 </html>
