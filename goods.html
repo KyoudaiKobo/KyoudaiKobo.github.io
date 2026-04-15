@@ -66,33 +66,41 @@
 
 <script>
 // =========================
-// タブUIを生成
+// タブUI生成（見出しデザイン統一）
 // =========================
 const container = document.getElementById('insertedarea');
 
 container.innerHTML = `
   <div class="tabs">
-    <button id="tabRecent" class="active">最近の商品</button>
-    <button id="tabArchive">過去商品</button>
+    <button id="tabRecent" class="tab active">
+      <span class="uline">最近の商品</span>
+      <span class="small">Recent Goods</span>
+    </button>
+    <button id="tabArchive" class="tab">
+      <span class="uline">過去商品</span>
+      <span class="small">Archive</span>
+    </button>
   </div>
 
   <div id="recentArea"></div>
   <div id="archiveArea" style="display:none;"></div>
 `;
 
+// =========================
 // タブ切り替え
+// =========================
 document.getElementById('tabRecent').onclick = () => {
-  document.getElementById('recentArea').style.display = 'block';
-  document.getElementById('archiveArea').style.display = 'none';
-  document.getElementById('tabRecent').classList.add('active');
-  document.getElementById('tabArchive').classList.remove('active');
+  recentArea.style.display = 'block';
+  archiveArea.style.display = 'none';
+  tabRecent.classList.add('active');
+  tabArchive.classList.remove('active');
 };
 
 document.getElementById('tabArchive').onclick = () => {
-  document.getElementById('recentArea').style.display = 'none';
-  document.getElementById('archiveArea').style.display = 'block';
-  document.getElementById('tabArchive').classList.add('active');
-  document.getElementById('tabRecent').classList.remove('active');
+  recentArea.style.display = 'none';
+  archiveArea.style.display = 'block';
+  tabArchive.classList.add('active');
+  tabRecent.classList.remove('active');
 };
 
 // =========================
@@ -142,6 +150,16 @@ const recentArea = document.getElementById('recentArea');
 const archiveArea = document.getElementById('archiveArea');
 
 // =========================
+// 過去商品タイトル追加
+// =========================
+archiveArea.innerHTML = `
+  <h2>
+    <span class="uline">過去商品</span>
+    <span class="small">Archive</span>
+  </h2>
+`;
+
+// =========================
 // 過去商品格納
 // =========================
 const archiveMap = {};
@@ -189,7 +207,7 @@ for (let i = 1; i < array.length; i++) {
   `;
 
   // =========================
-  // 分岐（ここが今回の本質）
+  // 分岐
   // =========================
   if (flag === "はい(過去商品)") {
     if (!archiveMap[year]) {
@@ -202,14 +220,17 @@ for (let i = 1; i < array.length; i++) {
 }
 
 // =========================
-// 過去商品描画（年度順）
+// 過去商品描画（年度順・見出し統一）
 // =========================
 Object.keys(archiveMap)
   .sort((a, b) => b - a)
   .forEach(year => {
     const section = `
       <details>
-        <summary>${year}年度の商品</summary>
+        <summary>
+          <span class="uline">${year}年度の商品</span>
+          <span class="small">${year}</span>
+        </summary>
         ${archiveMap[year].join("")}
       </details>
     `;
