@@ -63,7 +63,12 @@
 
 <section id="menu2">
 <h2><span class="uline">過去の商品</span><span class="small">Archive</span></h2>
-<div id="archiveArea" class="list-menu"></div>
+
+<details>
+  <summary></summary>
+  <div id="archiveArea" class="list-menu"></div>
+</details>
+
 </section>
 
 <script>
@@ -159,7 +164,24 @@ for (let i = 1; i < array.length; i++) {
     recentArea.insertAdjacentHTML('beforeend', html);
   }
 }
+
+const details = document.querySelector('#menu2 details');
+const h2 = document.querySelector('#menu2 h2');
+
+h2.style.cursor = "pointer";
+
+h2.onclick = () => {
+  details.open = !details.open;
+};
+
 </script>
+
+<style>
+#menu2 h2 {
+  cursor: pointer;
+}
+</style>
+	
 </main>
 
 </div>
