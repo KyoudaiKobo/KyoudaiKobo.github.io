@@ -63,12 +63,7 @@
 
 <section id="menu2">
 <h2><span class="uline">過去の商品</span><span class="small">Archive</span></h2>
-
-<details>
-  <summary></summary>
-  <div id="archiveArea" class="list-menu"></div>
-</details>
-
+<div id="archiveArea"></div>
 </section>
 
 <script>
@@ -197,19 +192,6 @@ Object.keys(archiveMap)
     `;
     archiveArea.insertAdjacentHTML('beforeend', section);
   });
-
-// =========================
-// 「過去商品」全体の開閉
-// =========================
-const details = document.querySelector('#menu2 details');
-const h2 = document.querySelector('#menu2 h2');
-
-if (details && h2) {
-  h2.style.cursor = "pointer";
-  h2.onclick = () => {
-    details.open = !details.open;
-  };
-}
 </script>
 
 <style>
