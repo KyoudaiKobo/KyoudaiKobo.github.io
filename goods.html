@@ -118,6 +118,25 @@ details .uline {
 details[open] .uline {
   border-bottom: 2px solid black;
 }
+.list-menu {
+  text-align: left;
+}
+
+#recentArea,
+#archiveArea {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+#contents main {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+details {
+  margin-top: 30px;
+}
 </style>
 <div id="trigger-point">
 
@@ -163,7 +182,7 @@ details[open] .uline {
 
 <section id="menu1">
 
-<h2><span class="uline">最近の商品</span><span class="small">Recent Goods</span></h2>
+
 
 <div id="insertedarea" class="list-menu">	
 </div>
