@@ -47,7 +47,11 @@
 <!----------------->
 <!--共通部分終わり-->
 <!----------------->
-
+	
+<!--ライトボックスの仕組み-->
+<div id="lightbox">
+  <img id="lightbox-img">
+</div>
 
 <!--------------------------------------------------------------Content------------------------------------------------------------------------>
 <!--------------------------------------------------------------Content------------------------------------------------------------------------>
@@ -57,76 +61,235 @@
 <main>
 
 <section id="menu1">
-
 <h2><span class="uline">最近の商品</span><span class="small">Recent Goods</span></h2>
+<div id="recentArea" class="list-menu"></div>
+</section>
 
-<div id="insertedarea" class="list-menu">	
-</div>
-<!--/.list-menu-->
+<section id="menu2">
+<h2><span class="uline">過去の商品</span><span class="small">Archive</span></h2>
+<div id="archiveArea"></div>
+</section>
+
 <script>
-
-// CSVファイルを取得
+// =========================
+// CSV読み込み
+// =========================
 let csv = new XMLHttpRequest();
-// CSVファイルへのパス
 csv.open("GET", "goodsData.csv", false);
-// csvファイル読み込み失敗時のエラー対応
+
 try {
   csv.send(null);
 } catch (err) {
   console.log(err);
 }
-// 配列を定義する
+
 let array = [];
-// 改行ごとに配列化
 let lines = csv.responseText.split(/\r\n|\n/);
-// 1行ごとに処理
-for (let i = 0; i < lines.length; ++i) {
+
+for (let i = 0; i < lines.length; i++) {
   let cells = lines[i].split("|");
-  if (cells.length != 1) {
+  if (cells.length > 1) {
     array.push(cells);
   }
-}	
-var menu1 = document.getElementById( 'insertedarea' );
+}
+
+// =========================
+// 並び替え
+// =========================
+const header = array[0];
+const body = array.slice(1);
+
+body.sort((a, b) => {
+  const getPriority = (row) => {
+    const flag = (row[7] || "").trim();
+    if (flag === "はい(おすすめ)") return 0;
+    if (flag === "はい(EC)") return 1;
+    return 2;
+  };
+  return getPriority(a) - getPriority(b);
+});
+
+array = [header, ...body];
+
+// =========================
+// 表示エリア
+// =========================
+const recentArea = document.getElementById('recentArea');
+const archiveArea = document.getElementById('archiveArea');
+const DUMMY_ID = "1h_lfV7E2J_2KteQF6OjIbhbjll01yDKK";
+
+// =========================
+// 年度ごと格納
+// =========================
+const archiveMap = {};
+
+// =========================
+// 商品ループ
+// =========================
+for (let i = 1; i < array.length; i++) {
+  const row = array[i];
+  if (!row) continue;
+
+  const imageId = (!row[4] || row[4].length < 20)
+    ? DUMMY_ID
+    : row[4];
+
+  const name = row[8] || row[1];
+  const price = row[3] || "";
+  const description = row[5] || "";
+  const flag = (row[7] || "").trim();
+
+  // ===== 年度抽出（ここ重要）=====
+  const year = row[6]
+    ? (row[6].match(/\d{4}/)?.[0] || "不明")
+    : "不明";
+
+  // バッジ
+  let badge = "";
+  if (flag === "はい(おすすめ)") {
+    badge = '<span class="newicon">おすすめ</span>';
+  } else if (flag === "はい(EC)") {
+    badge = '<span class="newicon">EC販売中</span>';
+  }
+
+  const html = `
+    <div class="list up">
+      <figure>
+        <img src="https://lh3.googleusercontent.com/d/${imageId}=w300-h300-c" width="500" height="500" alt="画像">
+      </figure>
+      <div class="text">
+        <h4>${name}<span class="price">￥${price}</span></h4>
+        <p>${description}</p>
+      </div>
+      ${badge}
+    </div>
+  `;
+
+  // =========================
+  // 分岐
+  // =========================
+  if (flag === "はい(過去商品)") {
+    if (!archiveMap[year]) {
+      archiveMap[year] = [];
+    }
+    archiveMap[year].push(html);
+  } else {
+    recentArea.insertAdjacentHTML('beforeend', html);
+  }
+}
+
+// =========================
+// 過去商品描画（年度ごと）
+// =========================
+Object.keys(archiveMap)
+  .sort((a, b) => b - a) // 新しい順
+  .forEach(year => {
+    const section = `
+      <details>
+        <summary>
+          <span class="uline">${year}年度の商品</span>
+          <span class="small">${year}</span>
+        </summary>
+        <div class="list-menu">
+          ${archiveMap[year].join("")}
+        </div>
+      </details>
+    `;
+    archiveArea.insertAdjacentHTML('beforeend', section);
+  });
+
+// =========================
+// ライトボックス
+// =========================
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightbox-img");
+
+
+// 商品画像クリック
+document.addEventListener("click", function(e) {
+  const img = e.target;
+  // 画像じゃないなら無視
+  if (!(img instanceof HTMLImageElement)) return;
+  // 商品画像じゃないなら無視
+  if (!img.closest(".list")) return;
+  // 準備中画像は無効
+  if (img.src.includes(DUMMY_ID)) return;
+
+  // 通常画像だけ拡大
+  lightbox.style.display = "flex";
+  lightboxImg.src = img.src.replace(/=w\d+-h\d+-c/, "=w1200-h1200-c");
+});
+
+// 閉じる
+lightbox.onclick = () => {
+  lightbox.style.display = "none";
+};
+// ESCでも閉じる
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    lightbox.style.display = "none";
+  }
+});
+</script>
+
+<style>
+#menu2 details summary {
+  cursor: pointer;
+}
+
+.list img {
+  width: 100%;
+  aspect-ratio: 1 / 1;   /* 正方形に固定 */
+  object-fit: cover;     /* はみ出た部分をカット */
+}
 	
-for (let i = 1; i < array.length +1 ; ++i){
-	if (array[i][4].length <= 10){
-		array [i][4] = "1h_lfV7E2J_2KteQF6OjIbhbjll01yDKK";
-	}
-	if (array[i][8] == ""){
-		if (array[i][7] == "はい(おすすめ)"){
-			menu1.insertAdjacentHTML('beforeend','<div class="list up"> \n <figure><img src="https://lh3.googleusercontent.com/d/'+array[i][4]+'" width="500" height="500" allow="autoplay" alt="画像"></figure> \n <div class="text"> \n <h4>'+array[i][1]+'<span class="price">￥'+array[i][3]+'</span></h4> \n <p>'+array[i][5]+'</p> \n </div> \n <span class="newicon">おすすめ</span> \n </div>');
-		}
-		else{
-			menu1.insertAdjacentHTML('beforeend','<div class="list up"> \n <figure><img src="https://lh3.googleusercontent.com/d/'+array[i][4]+'" width="500" height="500" allow="autoplay" alt="画像" ></figure> \n <div class="text"> \n <h4>'+array[i][1]+'<span class="price">￥'+array[i][3]+'</span></h4> \n <p>'+array[i][5]+'</p> \n </div> \n </div>');
-		}
-	}
-	else{		
-		if (array[i][7] == "はい(おすすめ)"){
-			menu1.insertAdjacentHTML('beforeend','<div class="list up"> \n <figure><img src="https://lh3.googleusercontent.com/d/'+array[i][4]+'" width="500" height="500" allow="autoplay" alt="画像"></figure> \n <div class="text"> \n <h4>'+array[i][8]+'<span class="price">￥'+array[i][3]+'</span></h4> \n <p>'+array[i][5]+'</p> \n </div> \n <span class="newicon">おすすめ</span> \n </div>');
-		}
-		else{
-			menu1.insertAdjacentHTML('beforeend','<div class="list up"> \n <figure><img src="https://lh3.googleusercontent.com/d/'+array[i][4]+'" width="500" height="500" allow="autoplay" alt="画像"></figure> \n <div class="text"> \n <h4>'+array[i][8]+'<span class="price">￥'+array[i][3]+'</span></h4> \n <p>'+array[i][5]+'</p> \n </div> \n </div>');
-		}	
-	}
+/* ライトボックスの描写 */
+/* 背景 */
+#lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* 画像 */
+#lightbox img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 8px;
+}
+	
+/* トランジション */
+#lightbox {
+  transition: 0.2s;
+}
+/* クリック可能にする */
+.list img {
+  cursor: pointer;
+}
+/* 通常商品 */
+.list img:hover {
+  opacity: 0.8;
+  transform: scale(1.03);
+}
+.list img[src*="1h_lfV7E2J_2KteQF6OjIbhbjll01yDKK"] {
+  cursor: default;
+}
+/* ホバー効果を打ち消す */
+.list img[src*="1h_lfV7E2J_2KteQF6OjIbhbjll01yDKK"]:hover {
+  opacity: 1;
+  transform: none;
 }
 
 
-
-</script>
-
-</section>
+</style>
 	
-
-
-	
-
-	
-
-
-
-
-
-
 </main>
 
 </div>
@@ -189,6 +352,9 @@ for (let i = 1; i < array.length +1 ; ++i){
 
 <!--このテンプレート専用のスクリプト-->
 <script src="js/main.js"></script>
+
+
+
 
 </body>
 </html>
